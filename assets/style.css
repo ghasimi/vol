@@ -1,0 +1,9 @@
+body {
+	font-family: 'Roboto', sans-serif;
+	font-weight: 300;
+	color: rgb(30, 50, 80);
+	margin: 0;
+	padding: 10px;
+	max-width: 700px;
+	margin: auto;
+}

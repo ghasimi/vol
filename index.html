@@ -1,21 +1,52 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">	
 		 <script src="https://cdn.plot.ly/plotly-3.4.0.min.js" charset="utf-8"></script>
+		<link rel="stylesheet" href="./assets/style.css">
 	</head>
 	<body>
+		<h1>Stochastic Volatility Inspired (SVI)</h1>
+
+		<div id="plotDiv"></div>
+
 		<div>
 			<div>
 				<label>a</label>
 				<input id="aInp" type="range" min="-5" max="5" value="0" />
+				<span>vertical shift</span>
 			</div>
 			<div>
 				<label>b</label>
 				<input id="bInp" type="range" min="0" max="200" value="50" />
+				<span>slope</span>
 			</div>
-		</div>		
-
-		<div id="plotDiv"></div>
+			<div>
+				<label>rho</label>
+				<input id="rhoInp" type="range" min="-100" max="100" value="0" />
+				<span>skew</span>
+			</div>		
+			<div>
+				<label>m</label>
+				<input id="mInp" type="range" min="-100" max="100" value="0" />
+				<span>horizontal shift</span>
+			</div>	
+			<div>
+				<label>sig</label>
+				<input id="sigInp" type="range" min="0" max="200" value="4" />
+				<span>ATM curvature</span>
+			</div>	
+			<div>
+				<label>DTE</label>
+				<input id="dteInp" type="range" min="0" max="365" value="30" />
+				<span>Days to Expiry</span>
+			</div>											
+		</div>
+		
+		<div style="margin-top: 50px;">
+			<div>SVI <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2033323">Reference</a></div>
+			<div>Repo <a href="https://github.com/ghasimi/vol">github.com/ghasimi/vol</a></div>
+		</div>
 		
 		<script>
 			svi = (k,a,b,rho,m,sig) => {
@@ -23,15 +54,19 @@
 				return w
 			}
 			updateShape = () => {
-				const a = aInp.value / 100
+				const a = aInp.value / 1000
 				const b = bInp.value / 100
-				const rho = 0
-				const m = 0
-				const sig = 0
-				const T = 30. / 365
+				const rho = rhoInp.value / 100
+				const m = mInp.value / 1000
+				const sig = sigInp.value / 1000
 
-				const n = 10
-				const K = [...Array(n+1).keys().map(x=> (100 + x - n / 2))]
+				const dte = dteInp.value
+				const T = dte / 365
+
+				const n = 50
+				const Kmin = 95
+				const Kmax = 105
+				const K = [...Array(n+1).keys().map(x=> Kmin + (Kmax - Kmin) * (x / n) )]
 				const F = 100.
 				const k = K.map(K => Math.log(K/F))
 				
@@ -47,17 +82,32 @@
 				const data = [{
 					x: K,
 					y: iv,
-					type: 'scatter'
+					type: 'scatter',
+					line: {color: '#0af'}
 				}];
 
-				Plotly.newPlot('plotDiv', data);				
+				const layout = {
+					//title: {text:'SVI Vol Smile Visualizer'},
+					xaxis: {title:{text:'strike price'}, showgrid:false, zeroline:false},
+					yaxis: {anchor:'free', position:.5, showgrid:false, zeroline:false},
+					margin: {l:0,r:0,t:0},
+					height: 350,
+				}
+				const config = {displayModeBar: false};				
+				const fig = {data, layout, config}
+				Plotly.newPlot('plotDiv', fig);				
 			}
 			
 			let aInp = document.getElementById("aInp")
 			let bInp = document.getElementById("bInp")
+			let rhoInp = document.getElementById("rhoInp")
+			let mInp = document.getElementById("mInp")
+			let sigInp = document.getElementById("sigInp")
+			let dteInp = document.getElementById("dteInp")
 
-			aInp.addEventListener("input", updateShape)
-			bInp.addEventListener("input", updateShape)
+			Array.from([aInp, bInp, rhoInp, mInp, sigInp, dteInp]).map(elm => {
+				elm.addEventListener("input", updateShape)				
+			});
 
 			document.addEventListener("DOMContentLoaded", function() {
 				updateShape();
