@@ -22,7 +22,7 @@
 				<span>slope</span>
 			</div>
 			<div>
-				<label>rho</label>
+				<label>ρ</label>
 				<input id="rhoInp" type="range" min="-100" max="100" value="0" />
 				<span>skew</span>
 			</div>		
@@ -32,7 +32,7 @@
 				<span>horizontal shift</span>
 			</div>	
 			<div>
-				<label>sig</label>
+				<label>σ</label>
 				<input id="sigInp" type="range" min="0" max="200" value="4" />
 				<span>ATM curvature</span>
 			</div>	
@@ -79,12 +79,26 @@
 				console.log('w', w)	
 				console.log('iv', iv)	
 				
-				const data = [{
-					x: K,
-					y: iv,
-					type: 'scatter',
-					line: {color: '#0af'}
-				}];
+				const b_base = 0.5
+				const w_base = svi(k,0,b_base,0,0,0)
+				const iv_base = w_base.map(w => (w/T)**.5)
+
+				const data = [
+					{
+						name: 'modified',
+						x: K,
+						y: iv,
+						type: 'scatter',
+						line: {color: '#0af'}
+					},
+					{
+						name: `base: all 0, b:${b_base}`,
+						x: K,
+						y: iv_base,
+						type: 'scatter',
+						line: {color: '#0af', dash: 'dot'}
+					}				
+				];
 
 				const layout = {
 					//title: {text:'SVI Vol Smile Visualizer'},
@@ -92,6 +106,7 @@
 					yaxis: {anchor:'free', position:.5, showgrid:false, zeroline:false},
 					margin: {l:0,r:0,t:0},
 					height: 350,
+					legend: {x:0, y:0},
 				}
 				const config = {displayModeBar: false};				
 				const fig = {data, layout, config}
