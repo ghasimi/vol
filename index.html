@@ -9,6 +9,10 @@
 		<h1>Stochastic Volatility Inspired (SVI)</h1>
 
 		<div id="plotDiv"></div>
+		
+		<img alt="SVI equation"
+			src="./assets/svi-equation.png" width="300" 
+			style="display: block; margin: auto; margin-bottom: 20px;" />
 
 		<div>
 			<div>
@@ -102,9 +106,9 @@
 
 				const layout = {
 					//title: {text:'SVI Vol Smile Visualizer'},
-					xaxis: {title:{text:'strike price'}, showgrid:false, zeroline:false},
+					xaxis: {showgrid:false, zeroline:false},
 					yaxis: {anchor:'free', position:.5, showgrid:false, zeroline:false},
-					margin: {l:0,r:0,t:0},
+					margin: {l:0,r:0,t:0,b:50},
 					height: 350,
 					legend: {x:0, y:0},
 				}
