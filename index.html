@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		 <script src="https://cdn.plot.ly/plotly-3.4.0.min.js" charset="utf-8"></script>
+	</head>
+	<body>
+		<div>
+			<div>
+				<label>a</label>
+				<input id="aInp" type="range" min="-5" max="5" value="0" />
+			</div>
+			<div>
+				<label>b</label>
+				<input id="bInp" type="range" min="0" max="200" value="50" />
+			</div>
+		</div>		
+
+		<div id="plotDiv"></div>
+		
+		<script>
+			svi = (k,a,b,rho,m,sig) => {
+				w = k.map(k=> a + b * (rho * (k - m)  + ((k - m)**2 + sig**2)**.5))
+				return w
+			}
+			updateShape = () => {
+				const a = aInp.value / 100
+				const b = bInp.value / 100
+				const rho = 0
+				const m = 0
+				const sig = 0
+				const T = 30. / 365
+
+				const n = 10
+				const K = [...Array(n+1).keys().map(x=> (100 + x - n / 2))]
+				const F = 100.
+				const k = K.map(K => Math.log(K/F))
+				
+				const w = svi(k,a,b,rho,m,sig)
+				const iv = w.map(w => (w/T)**.5)
+
+				console.log({a, b, rho, m, sig})
+				console.log({T, F})
+				console.log('K', K)	
+				console.log('w', w)	
+				console.log('iv', iv)	
+				
+				const data = [{
+					x: K,
+					y: iv,
+					type: 'scatter'
+				}];
+
+				Plotly.newPlot('plotDiv', data);				
+			}
+			
+			let aInp = document.getElementById("aInp")
+			let bInp = document.getElementById("bInp")
+
+			aInp.addEventListener("input", updateShape)
+			bInp.addEventListener("input", updateShape)
+
+			document.addEventListener("DOMContentLoaded", function() {
+				updateShape();
+			});
+			
+		</script>
+	</body>
+</html>
