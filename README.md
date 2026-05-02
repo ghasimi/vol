@@ -1,6 +1,6 @@
 # Vol
 
-On volatility, smile, surface, etc.
+A personal learning project on volatility, smile, surface, etc.
 
 ## Stochastic Volatility Inspired (SVI)
 
