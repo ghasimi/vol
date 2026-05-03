@@ -70,9 +70,9 @@ updateShape = () => {
 		height: 350,
 		legend: {
 			title:{text:'a, b, ρ, m, σ'},
-			x:0.5, 
+			x:0.4, 
 			y:1, 
-			xanchor:'center', 
+			xanchor:'left', 
 			yanchor:'top', 
 			bgcolor:'rgba(255,255,255,1)'},
 	}
