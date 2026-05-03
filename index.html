@@ -17,17 +17,17 @@
 		<div>
 			<div>
 				<label>a</label>
-				<input id="aInp" type="range" min="-5" max="5" value="0" />
+				<input id="aInp" type="range" min="-100" max="100" value="0" />
 				<span>vertical shift</span>
 			</div>
 			<div>
 				<label>b</label>
-				<input id="bInp" type="range" min="0" max="200" value="50" />
+				<input id="bInp" type="range" min="0" max="200" value="100" />
 				<span>slope</span>
 			</div>
 			<div>
 				<label>ρ</label>
-				<input id="rhoInp" type="range" min="-100" max="100" value="0" />
+				<input id="rhoInp" type="range" min="-1000" max="1000" value="-100" />
 				<span>skew</span>
 			</div>		
 			<div>
@@ -37,7 +37,7 @@
 			</div>	
 			<div>
 				<label>σ</label>
-				<input id="sigInp" type="range" min="0" max="200" value="4" />
+				<input id="sigInp" type="range" min="0" max="140" value="70" />
 				<span>ATM curvature</span>
 			</div>	
 			<div>
@@ -69,9 +69,9 @@
 				return w
 			}
 			updateShape = () => {
-				const a = aInp.value / 1000
-				const b = bInp.value / 100
-				const rho = rhoInp.value / 100
+				const a = aInp.value / 10000
+				const b = bInp.value / 1000
+				const rho = rhoInp.value / 1000
 				const m = mInp.value / 1000
 				const sig = sigInp.value / 1000
 
@@ -79,10 +79,10 @@
 				const T = dte / 365
 
 				const n = 50
-				const Kmin = 95
-				const Kmax = 105
-				const K = [...Array(n+1).keys().map(x=> Kmin + (Kmax - Kmin) * (x / n) )]
 				const F = 100.
+				const Kmin = F * .95
+				const Kmax = F * 1.05
+				const K = [...Array(n+1).keys().map(x=> Kmin + (Kmax - Kmin) * (x / n) )]
 				const k = K.map(K => Math.log(K/F))
 				
 				const w = svi(k,a,b,rho,m,sig)
@@ -94,26 +94,26 @@
 				console.log('w', w)	
 				console.log('iv', iv)	
 				
-				const b_base = 0.5
-				const w_base = svi(k,0,b_base,0,0,0)
+				const b_base = 0.1
+				const sig_base = 0.07
+				const w_base = svi(k,0,b_base,0,0,sig_base)
 				const iv_base = w_base.map(w => (w/T)**.5)
 
-				const data = [
-					{
-						name: 'modified',
-						x: K,
-						y: iv,
-						type: 'scatter',
-						line: {color: '#0af'}
-					},
-					{
-						name: `base: all 0, b:${b_base}`,
+				const trace_modified = {
+					name: `${a}, ${b}, ${rho}, ${m}, ${sig}`,
+					x: K,
+					y: iv,
+					type: 'scatter',
+					line: {color: '#0af'}
+				}
+				const trace_base = {
+						name: `0, ${b_base}, 0, 0, ${sig_base}`,
 						x: K,
 						y: iv_base,
 						type: 'scatter',
 						line: {color: '#0af', dash: 'dot'}
-					}				
-				];
+				}
+				const data = [trace_modified, trace_base];
 
 				const layout = {
 					//title: {text:'SVI Vol Smile Visualizer'},
@@ -121,7 +121,8 @@
 					yaxis: {anchor:'free', position:.5, showgrid:false, zeroline:false, fixedrange:true},
 					margin: {l:0,r:0,t:0,b:50},
 					height: 350,
-					legend: {x:0, y:0},
+					legend: {title:{text:'a, b, ρ, m, σ'},
+						x:0.5, y:1, xanchor:'center', yanchor:'top', bgcolor:'rgba(255,255,255,1)'},
 				}
 				const config = {displayModeBar: false};				
 				const fig = {data, layout, config}
